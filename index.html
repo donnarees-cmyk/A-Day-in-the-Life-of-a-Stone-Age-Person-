@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A Day in the Life: Stone Age Narrative</title>
+<style>
+:root{--rock:#262c2e;--stone:#e3e5df;--paper:#f6f7f3;--ochre:#c0831a;--ember:#a8431f;--moss:#4f6b45;--ink:#1d2123;--mute:#5d6563;--line:#c9cdc5}
+*{box-sizing:border-box}
+body{margin:0;background:var(--stone);color:var(--ink);font:17px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+h1,h2,h3{font-family:Rockwell,"Roboto Slab","Courier New",Georgia,serif;line-height:1.2;margin:0 0 .5rem}
+header{background:var(--rock);color:#f1ede2;padding:1.2rem 1rem .9rem;border-bottom:6px solid var(--ochre)}
+header h1{font-size:1.6rem;margin:0}
+header p{margin:.2rem 0 .8rem;color:#c9c4b6;font-size:.95rem}
+nav{display:flex;gap:.4rem;flex-wrap:wrap}
+nav button{background:#3a4245;color:#e8e4d8;border:2px solid transparent;border-radius:999px;padding:.35rem .8rem;font:inherit;font-size:.85rem;cursor:pointer}
+nav button.on{background:var(--ochre);color:#1d1606;font-weight:700}
+nav button.done{border-color:var(--moss)}
+main{max-width:860px;margin:1.2rem auto;padding:0 1rem 4rem}
+.card{background:var(--paper);border:1px solid var(--line);border-left:6px solid var(--ochre);border-radius:6px;padding:1rem 1.2rem;margin:0 0 1rem}
+.card.moss{border-left-color:var(--moss)}.card.ember{border-left-color:var(--ember)}
+.std{display:flex;gap:.4rem;flex-wrap:wrap;margin:.2rem 0 1rem}
+.std span{font-size:.78rem;background:var(--rock);color:#eee;padding:.15rem .55rem;border-radius:4px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:.7rem}
+details{background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:.6rem .9rem}
+summary{cursor:pointer;font-weight:700}
+.chips{display:flex;flex-wrap:wrap;gap:.45rem;margin:.4rem 0 .9rem}
+.chip{background:#fff;border:2px solid var(--line);border-radius:8px;padding:.4rem .7rem;font:inherit;font-size:.93rem;cursor:pointer;text-align:left}
+.chip:hover{border-color:var(--ochre)}
+.chip[aria-pressed=true]{background:var(--rock);color:#fff;border-color:var(--rock)}
+.chip.ins{background:#fbf3e0;border-color:#e2c98e}
+label{font-weight:700;display:block;margin:.6rem 0 .2rem}
+input[type=text],textarea{width:100%;font:inherit;padding:.6rem .7rem;border:2px solid var(--line);border-radius:6px;background:#fff;color:var(--ink)}
+textarea{min-height:240px;line-height:1.7;resize:vertical}
+input:focus,textarea:focus,button:focus-visible,summary:focus-visible{outline:3px solid var(--ochre);outline-offset:1px}
+.tabs{display:flex;gap:.3rem;flex-wrap:wrap;margin-bottom:.5rem}
+.tabs button{border:0;background:var(--line);padding:.4rem .8rem;border-radius:6px 6px 0 0;font:inherit;font-size:.9rem;cursor:pointer}
+.tabs button.on{background:var(--rock);color:#fff}
+.tip{font-size:.9rem;color:var(--mute);margin:.2rem 0 .5rem}
+.btns{display:flex;justify-content:space-between;gap:1rem;margin-top:1.2rem}
+.btn{background:var(--ochre);color:#1d1606;border:0;border-radius:8px;padding:.7rem 1.4rem;font:inherit;font-weight:700;cursor:pointer}
+.btn.alt{background:#fff;border:2px solid var(--rock);color:var(--rock)}
+.q{margin:0 0 1rem}.q .chip{display:block;width:100%;margin:.3rem 0}
+.fb{font-size:.92rem;margin:.2rem 0;min-height:1.3em}.ok{color:var(--moss);font-weight:700}.no{color:var(--ember);font-weight:700}
+.scan{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:.5rem;font-size:.92rem}
+.scan div{background:#fff;border:1px solid var(--line);border-radius:6px;padding:.5rem .7rem}
+.checks label{font-weight:400;display:flex;gap:.6rem;align-items:flex-start;margin:.35rem 0}
+.checks input{margin-top:.35rem;width:1.1rem;height:1.1rem}
+.sub{background:#fff;border:2px solid var(--rock);border-radius:6px;padding:1.2rem 1.4rem}
+.sub h2{font-size:1.5rem;text-align:center}
+.sub .meta{display:flex;justify-content:space-between;flex-wrap:wrap;color:var(--mute);font-size:.9rem;border-bottom:2px solid var(--ochre);padding-bottom:.4rem;margin-bottom:.8rem}
+.sub p{margin:0 0 .9rem;font-family:Georgia,serif;font-size:1.05rem;line-height:1.75;white-space:pre-wrap}
+#toast{position:fixed;bottom:1rem;left:50%;transform:translateX(-50%);background:var(--ember);color:#fff;padding:.6rem 1rem;border-radius:8px;display:none;z-index:9}
+@media(max-width:560px){body{font-size:16px}.sub{padding:1rem}}
+</style>
+</head>
+<body>
+<header>
+  <h1>A Day in the Life: Stone Age Narrative</h1>
+  <p>Plan it. Write it. Polish it. Then take a screenshot to turn in on Canvas.</p>
+  <nav id="nav" aria-label="Steps"></nav>
+</header>
+<main id="app"></main>
+<div id="toast" role="status"></div>
+
+<script>
+const ALLOW_PASTE=false; // change to true if you want students to be able to paste text
+const STEPS=["Start","Review","Plan","Beginning","Middle","End","Revise","Submit"];
+const D={
+comps:[
+["Character","Who is the story about? Show what your character wants, fears, and feels through actions, thoughts, and words."],
+["Setting","Where and when the story happens. Strong settings use details that help the reader see, hear, and smell the place."],
+["Point of View","Who is telling the story? First person uses I/we. Third person uses he/she/they. Pick one and stay with it."],
+["Plot","Beginning (introduce character, setting, problem), middle (the problem grows to the climax), end (the problem is solved and the character reflects)."],
+["Narrative Techniques","Dialogue (what characters say), pacing (slow down big moments, speed up small ones), description, and reflection (what the narrator thinks or learns)."],
+["Precise Words and Figurative Language","Use exact words (crept, not went). Use similes, metaphors, and personification to create pictures in the reader's mind."],
+["Transitions","Words and phrases that move the reader through time and events: at dawn, soon after, suddenly, by nightfall."],
+["Conclusion","Wrap up the problem and leave the reader with a feeling or a lesson. Do not just stop."]],
+quiz:[
+["\"The fire crackled like thunder in my ears.\" What is this?",["Metaphor","Simile","Personification"],1,"A simile compares two things using like or as."],
+["Which sentence uses the most precise words?",["I went to the place.","I crept toward the dim cave mouth, clutching my flint spear.","I did a thing near the cave."],1,"Precise words (crept, dim, clutching, flint) make a clear picture."],
+["Which dialogue is punctuated correctly?",["\"Run\" shouted Ona!","Run! \"shouted Ona.\"","\"Run!\" shouted Ona."],2,"The punctuation goes inside the quotation marks, and the speaker tag is not capitalized."],
+["A story begins \"I woke up cold.\" Later it says \"She grabbed her spear.\" What went wrong?",["Shifted point of view","Too much dialogue","No setting"],0,"The narrator switched from first person (I) to third person (she). Keep one point of view."]],
+roles:["Hunter","Fire-keeper","Toolmaker","Cave painter","Gatherer","Scout"],
+settings:["Frozen Ice Age plain","Forest by a river","Cliffside cave","Grassland near a watering hole"],
+pov:["First person (I)","Third person (he/she)"],
+probs:["Food is running out","A predator is nearby","The fire is dying","A storm is coming","A stranger from another tribe arrives"],
+themes:["Courage","Teamwork","Survival","Curiosity"],
+hooks:[
+["Sensory","The smell of smoke and wet fur filled my nose before I even opened my eyes."],
+["Action","Crack! A branch snapped outside the cave, and every one of us froze."],
+["Dialogue","\"Wake up,\" whispered ___. \"The herd is close.\""],
+["Thought","I had never been so hungry as I was the morning the snow came."]],
+events:[
+["Tend the fire","Ash drifted into my eyes as I fed the last dry sticks to the dying fire."],
+["Go on the hunt","We crouched in the tall grass, spears ready, as the herd drifted closer."],
+["Face a predator","A low growl rumbled from the shadows. Two yellow eyes were watching us."],
+["Weather a storm","The sky turned the color of an old bruise, and the first icy drops stung my skin."],
+["Make a tool","I struck the flint again and again until a sharp edge finally appeared."],
+["Paint the cave wall","With a stick of charcoal, I drew the hunt so that no one would forget it."],
+["Gather food","My fingers searched the frozen ground for roots and berries."],
+["Meet a stranger","A stranger stepped out of the trees, and nobody moved."]],
+tools:{
+Dialogue:["\"___,\" whispered ___.","\"Stay low,\" ___ warned, \"and do not make a sound.\"","___ pointed toward the ridge. \"Look there!\"","\"We cannot go back without food,\" I said."],
+Senses:["Sight: glowing embers, shaggy, shadowy, frost-covered, glittering","Sound: crackled, rumbled, howled, rustled, thundered","Smell: smoky, musty, rotting, sharp, earthy","Touch: rough, gritty, slick, numbing, scratchy","Taste: bitter, smoky, gamey, gritty, sweet"],
+Figurative:["The wind howled like ___.","The cave was as dark as ___.","The fire was a hungry animal, ___.","The mountains watched us with ___ eyes.","My heart pounded like ___."],
+Transitions:["At dawn, ","Soon after, ","Meanwhile, ","Without warning, ","A few moments later, ","By midday, ","Just as ___, ","As the sun sank, ","By nightfall, "],
+Words:["crept","scavenge","flint","sinew","pelt","ember","wary","trembled","adapt","resource","challenge","cooperate","survive","essential","struggle","ancient"]},
+ends:["By nightfall, the danger had passed, and our tribe gathered around the fire.","The problem was not solved yet, but I knew we could face it together.","When the last ember glowed, I finally felt safe."],
+refl:["That night, I realized that ___.","As the fire burned low, I thought about ___.","I will never forget ___, because ___.","Tomorrow, I hope ___."],
+trans:["at dawn","soon after","meanwhile","suddenly","without warning","later","moments later","by midday","by nightfall","as the sun","then","finally","next","after","before","just as","at last"],
+acad:["adapt","resource","challenge","cooperate","survive","essential","struggle","ancient","anticipate","ensure","community"],
+checks:[
+["Beginning introduces my character, setting, and problem.","ELA.6.C.1.2"],
+["My events happen in a clear order and build to a big moment (climax).","ELA.6.C.1.2"],
+["I stayed in one point of view the whole story.","ELA.6.R.1.3"],
+["I used dialogue with correct punctuation and a new paragraph for each speaker.","ELA.6.C.1.2 / C.3.1"],
+["I slowed down at the most important moment with extra description (pacing).","ELA.6.C.1.2"],
+["I used at least three senses.","ELA.6.C.1.2"],
+["I used at least one simile, metaphor, or personification.","ELA.6.V.1.3"],
+["I used precise words and at least two academic vocabulary words.","ELA.6.V.1.1"],
+["I used transitions to show the passing of time.","ELA.6.C.1.2"],
+["My ending solves the problem and shows what my character thinks or learned (reflection).","ELA.6.C.1.2"],
+["I checked capital letters, end punctuation, commas, and spelling.","ELA.6.C.3.1"],
+["I typed my whole story on the computer using this tool.","ELA.6.C.5.2"]]
+};
+let S={name:"",period:"",plan:{},want:"",begin:"",middle:"",end:"",title:"",tab:"Dialogue",checks:{},quiz:{}};
+let cur=0;
+try{Object.assign(S,JSON.parse(localStorage.getItem("stoneage")||"{}"));cur=+localStorage.getItem("stoneageStep")||0}catch(e){}
+const $=s=>document.querySelector(s);
+const esc=t=>String(t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function save(){try{localStorage.setItem("stoneage",JSON.stringify(S));localStorage.setItem("stoneageStep",cur)}catch(e){}}
+function toast(m){const t=$("#toast");t.textContent=m;t.style.display="block";setTimeout(()=>t.style.display="none",2600)}
+const std=a=>'<div class="std">'+a.map(x=>"<span>"+x+"</span>").join("")+"</div>";
+const chips=(key,arr)=>'<div class="chips" role="group">'+arr.map(v=>`<button class="chip" data-plan="${key}" data-v="${esc(v)}" aria-pressed="${S.plan[key]===v}">${esc(v)}</button>`).join("")+"</div>";
+const ta=(id,ph)=>`<textarea id="${id}" placeholder="${ph}" spellcheck="true">${esc(S[id])}</textarea>`;
+const words=t=>(t.trim().match(/\S+/g)||[]).length;
+const all=()=>[S.begin,S.middle,S.end].filter(x=>x.trim()).join("\n\n");
+const insBtns=(a,id)=>'<div class="chips">'+a.map(t=>`<button class="chip ins" data-ins="${esc(t)}" data-to="${id}">${esc(t)}</button>`).join("")+"</div>";
+
+const V={
+0(){return `<div class="card"><h2>Welcome, writer!</h2><p>You are a person living in the Stone Age, tens of thousands of years ago. There are no stores, no electricity, and no walls except stone. Your job is to write a <b>narrative</b>: a story about <b>one day in your life</b>.</p><p>This tool walks you through every part of a strong story. You make choices, get ideas, and type your story right here. Your work saves on this computer as you type.</p>${std(["ELA.6.C.1.2 Narrative writing","ELA.6.C.3.1 Conventions","ELA.6.C.5.2 Digital tools","ELA.6.V.1.1 / V.1.3 Vocabulary & figurative language","ELA.6.R.1.3 Point of view"])}
+<label for="name">Your first and last name</label><input type="text" id="name" value="${esc(S.name)}">
+<label for="period">Class period</label><input type="text" id="period" value="${esc(S.period)}"></div>
+<div class="card moss"><b>How it works:</b> Review, then Plan, then write your Beginning, Middle, and End. Next you Revise with a checklist and finally Submit. Pasting text is turned off, so everything you turn in is your own writing.</div>`},
+1(){return `<div class="card"><h2>Narrative Writing Review</h2>${std(["ELA.6.C.1.2","ELA.6.R.1.3"])}<p>Open each card to review the parts of a narrative.</p><div class="grid">${D.comps.map(c=>`<details><summary>${c[0]}</summary><p>${c[1]}</p></details>`).join("")}</div></div>
+<div class="card moss"><h3>Quick Check</h3>${D.quiz.map((q,i)=>`<div class="q"><b>${i+1}. ${esc(q[0])}</b>${q[1].map((o,j)=>`<button class="chip" data-q="${i}" data-j="${j}">${esc(o)}</button>`).join("")}<div class="fb" id="fb${i}"></div></div>`).join("")}</div>`},
+2(){return `<div class="card"><h2>Plan Your Story</h2>${std(["ELA.6.C.1.2","ELA.6.R.1.3"])}<p class="tip">Tap a choice in each group. Your choices will show up as reminders while you write.</p>
+<label for="cname">Your character's Stone Age name</label><input type="text" id="cname" value="${esc(S.plan.cname||"")}" placeholder="Example: Ona, Kesh, Brann">
+<label>Your character's job</label>${chips("role",D.roles)}
+<label>Setting</label>${chips("setting",D.settings)}
+<label>Point of view (who tells the story?)</label>${chips("pov",D.pov)}
+<label>Main problem of the day</label>${chips("prob",D.probs)}
+<label>Big idea your story shows</label>${chips("theme",D.themes)}
+<label for="want">What does your character want most today?</label><input type="text" id="want" value="${esc(S.want)}" placeholder="Example: to bring back enough food for my family"></div>`},
+3(){return `<div class="card"><h2>Write the Beginning</h2>${std(["ELA.6.C.1.2","ELA.6.V.1.3"])}${planBar()}<p>A strong beginning has a <b>hook</b>, introduces your <b>character</b> and <b>setting</b>, and hints at the <b>problem</b>. Tap a hook to add it, then change it so it is yours.</p><div class="chips">${D.hooks.map(h=>`<button class="chip ins" data-ins="${esc(h[1])}" data-to="begin"><b>${h[0]}:</b> ${esc(h[1])}</button>`).join("")}</div>${ta("begin","Start your story here. Aim for 1 to 2 paragraphs (about 80 words).")}<div class="tip" id="wc"></div></div>`},
+4(){const t=Object.keys(D.tools);return `<div class="card"><h2>Write the Middle</h2>${std(["ELA.6.C.1.2","ELA.6.V.1.1","ELA.6.V.1.3","ELA.6.C.3.1"])}${planBar()}<p>The middle is where your problem <b>grows</b> and you reach the <b>climax</b>, the most exciting moment. Choose two or three things your character encounters. Slow down at the big moment with lots of detail.</p><h3>What will you encounter?</h3>${insBtns(D.events.map(e=>e[0]+": "+e[1]),"middle").replace(/data-ins="[^:]*: /g,'data-ins="')}
+<h3>Writer's Toolbox</h3><div class="tabs">${t.map(x=>`<button data-tab="${x}" class="${S.tab===x?"on":""}">${x}</button>`).join("")}</div>${S.tab==="Senses"?'<ul>'+D.tools.Senses.map(x=>"<li>"+x+"</li>").join("")+"</ul>":insBtns(D.tools[S.tab],"middle")}<p class="tip">${tabTip()}</p>
+${ta("middle","Write the middle of your story here. Aim for 3 to 4 paragraphs (about 150 words). Start a new paragraph each time a new person speaks or a new event begins.")}<div class="tip" id="wc"></div></div>`},
+5(){return `<div class="card"><h2>Write the Ending</h2>${std(["ELA.6.C.1.2"])}${planBar()}<p>A strong ending <b>solves or settles the problem</b> and includes <b>reflection</b>: what your character thinks, feels, or learned.</p><h3>Ways to wrap up</h3>${insBtns(D.ends,"end")}<h3>Reflection starters</h3>${insBtns(D.refl,"end")}${ta("end","Write your ending here. Aim for 1 to 2 paragraphs (about 70 words).")}<div class="tip" id="wc"></div></div>`},
+6(){const a=scan();return `<div class="card"><h2>Revise and Edit</h2>${std(["ELA.6.C.1.2","ELA.6.C.3.1","ELA.6.C.5.2","ELA.6.V.1.1"])}<p>Go back to any step to improve your writing. This scan gives hints, but you are the editor, so read your whole story slowly.</p>
+<div class="scan"><div><b>Words:</b> ${a.w} <small>(goal: 250+)</small></div><div><b>Paragraphs:</b> ${a.p} <small>(goal: 5+)</small></div><div><b>Dialogue:</b> ${a.d?"found":"none found yet"}</div><div><b>Transitions:</b> ${a.t.length?a.t.join(", "):"none found yet"}</div><div><b>Comparison (like/as):</b> ${a.f?"found":"none found yet"}</div><div><b>Academic words:</b> ${a.a.length?a.a.join(", "):"none found yet"}</div></div></div>
+<div class="card moss checks"><h3>Check your story</h3>${D.checks.map((c,i)=>`<label><input type="checkbox" data-ck="${i}" ${S.checks[i]?"checked":""}><span>${c[0]} <small>(${c[1]})</small></span></label>`).join("")}</div>
+<div class="card ember"><b>Editing reminders:</b> Every sentence starts with a capital letter and ends with punctuation. Names are capitalized. Each speaker gets a new paragraph. Use a comma after a long introductory phrase (<i>At dawn, I...</i>). Check spelling of the words you are unsure about.</div>`},
+7(){const ps=all().split(/\n+/).filter(x=>x.trim());const ok=Object.keys(S.checks).filter(k=>S.checks[k]).length;return `<div class="card"><h2>Submit Your Story</h2><p><b>1.</b> Give your story a title. <b>2.</b> Make sure your name and period are correct. <b>3.</b> Scroll down and take a <b>screenshot of your entire story</b> (take more than one if it is long). <b>4.</b> Upload the screenshot(s) to Canvas.</p><p class="tip">Checklist: ${ok} of ${D.checks.length} items checked. ${ok<D.checks.length?"Go back to Revise to finish your checklist.":"Nice work."}</p>
+<label for="title">Story title</label><input type="text" id="title" value="${esc(S.title)}"></div>
+<div class="sub" id="final"><h2 id="ttl">${esc(S.title||"Untitled")}</h2><div class="meta"><span>${esc(S.name||"Name missing")}</span><span>Period ${esc(S.period||"?")}</span><span>${words(all())} words</span></div>${ps.length?ps.map(p=>"<p>"+esc(p)+"</p>").join(""):"<p>Your story is empty. Go back and write it first.</p>"}</div>`}
+};
+function planBar(){const p=S.plan;const b=[p.cname,p.role,p.setting,p.pov,p.prob,p.theme].filter(Boolean);return b.length?`<div class="tip"><b>Your plan:</b> ${b.map(esc).join(" | ")}${S.want?" | Wants: "+esc(S.want):""}</div>`:'<div class="tip">Tip: finish the Plan step first for story reminders.</div>'}
+function tabTip(){return {Dialogue:"Remember: put the punctuation inside the quotation marks.",Senses:"Try to use at least three senses in your story.",Figurative:"Finish the comparison with something Stone Age: fire, animals, ice, stone.",Transitions:"Use transitions to show time passing.",Words:"Precise and academic words make your writing stronger."}[S.tab]}
+function scan(){const t=all(),l=t.toLowerCase();return{w:words(t),p:t.split(/\n+/).filter(x=>x.trim()).length,d:(t.match(/["\u201c]/g)||[]).length>=2,t:D.trans.filter(x=>l.includes(x)),f:/\b(like|as)\b[^.!?]{0,40}\b(a|an|the)\b|\bas \w+ as\b/i.test(t)||/\blike (a|an|the)\b/i.test(t),a:D.acad.filter(x=>new RegExp("\\b"+x,"i").test(t))}}
+
+function drawNav(){$("#nav").innerHTML=STEPS.map((s,i)=>`<button data-go="${i}" class="${i===cur?"on":i<cur?"done":""}" ${i===cur?'aria-current="step"':""}>${i+1}. ${s}</button>`).join("")}
+function render(){drawNav();$("#app").innerHTML=V[cur]()+`<div class="btns">${cur>0?'<button class="btn alt" data-go="'+(cur-1)+'">Back</button>':"<span></span>"}${cur<7?'<button class="btn" data-go="'+(cur+1)+'">Next</button>':""}</div>`;wc();window.scrollTo(0,0);save()}
+function wc(){const e=$("#wc"),t=$("textarea");if(e&&t)e.textContent=words(t.value)+" words"}
+function go(n){cur=n;render()}
+
+document.addEventListener("click",e=>{
+const b=e.target.closest("button");if(!b)return;
+if(b.dataset.go!==undefined)return go(+b.dataset.go);
+if(b.dataset.plan){const k=b.dataset.plan;S.plan[k]=b.dataset.v;b.parentNode.querySelectorAll(".chip").forEach(x=>x.setAttribute("aria-pressed",x===b));save()}
+if(b.dataset.tab){S.tab=b.dataset.tab;const m=$("textarea").value;S.middle=m;render()}
+if(b.dataset.ins!==undefined){const t=document.getElementById(b.dataset.to);let s=b.dataset.ins;const i=t.selectionStart??t.value.length;t.value=t.value.slice(0,i)+(i&&!/\s$/.test(t.value.slice(0,i))?" ":"")+s+t.value.slice(t.selectionEnd??i);t.focus();t.dispatchEvent(new Event("input"))}
+if(b.dataset.q!==undefined){const i=+b.dataset.q,j=+b.dataset.j,q=D.quiz[i],f=$("#fb"+i);f.innerHTML=j===q[2]?'<span class="ok">Correct!</span> '+q[3]:'<span class="no">Not quite.</span> Try again.'}
+});
+document.addEventListener("input",e=>{
+const t=e.target;
+if(["begin","middle","end"].includes(t.id)){S[t.id]=t.value;wc()}
+else if(["name","period","want","title"].includes(t.id)){S[t.id]=t.value;if(t.id==="title"&&$("#ttl"))$("#ttl").textContent=t.value||"Untitled"}
+else if(t.id==="cname")S.plan.cname=t.value;
+else if(t.dataset.ck!==undefined)S.checks[t.dataset.ck]=t.checked;
+save();
+});
+document.addEventListener("paste",e=>{if(!ALLOW_PASTE&&e.target.matches("textarea")){e.preventDefault();toast("Pasting is turned off. Type your own words!")}});
+render();
+</script>
+</body>
+</html>
